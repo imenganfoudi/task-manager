@@ -1,0 +1,177 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('projects', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->foreignId('owner_id')->constrained('users')->cascadeOnDelete();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('projects');
+    }
+};<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('tasks', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('project_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('assigned_to')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->enum('status', ['todo', 'in_progress', 'done'])->default('todo');
+            $table->date('due_date')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('tasks');
+    }
+};<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Project extends Model
+{
+    /** @use HasFactory<\Database\Factories\ProjectFactory> */
+    use HasFactory;
+
+    protected $fillable = ['name', 'description', 'owner_id'];
+
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+}<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Task extends Model
+{
+    /** @use HasFactory<\Database\Factories\TaskFactory> */
+    use HasFactory;
+
+    protected $fillable = ['project_id', 'assigned_to', 'title', 'description', 'status', 'due_date'];
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    public function assignee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
+    }
+}<?php
+
+namespace App\Models;
+
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
+
+#[Fillable(['name', 'email', 'password'])]
+#[Hidden(['password', 'remember_token'])]
+class User extends Authenticatable
+{
+    /** @use HasFactory<UserFactory> */
+   use HasFactory, Notifiable, HasRoles;
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+}
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Route::get('/projects', function () {
+    return view('projects');
+})->middleware('auth');
+
+Route::get('/projects/{project}', function (\App\Models\Project $project) {
+    return view('project-tasks', ['project' => $project]);
+})->middleware('auth');
+
+Route::get('/login-as-admin', function () {
+    $user = \App\Models\User::firstOrCreate(
+        ['email' => 'admin@task.com'],
+        ['name' => 'Admin', 'password' => bcrypt('password123')]
+    );
+    auth()->login($user);
+    return redirect('/projects');
+});C:\laragon\www\task-manager\resources\views\components
+C:\laragon\www\task-manager\resources\views\project-tasks.blade.php
+C:\laragon\www\task-manager\resources\views\projects.blade.php
+C:\laragon\www\task-manager\resources\views\welcome.blade.php
+C:\laragon\www\task-manager\resources\views\components\⚡project-list.blade.php
+C:\laragon\www\task-manager\resources\views\components\⚡task-board.blade.php
+C:\laragon\www\task-manager\tests\Feature
+C:\laragon\www\task-manager\tests\TestCase.php
+C:\laragon\www\task-manager\tests\Unit
+C:\laragon\www\task-manager\tests\Feature\ExampleTest.php
+C:\laragon\www\task-manager\tests\Unit\ExampleTest.php
