@@ -3,22 +3,17 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/projects', function () {
-    return view('projects');
-})->middleware('auth');
-
-Route::get('/projects/{project}', function (\App\Models\Project $project) {
-    return view('project-tasks', ['project' => $project]);
-})->middleware('auth');
-
-Route::get('/login-as-admin', function () {
-    $user = \App\Models\User::firstOrCreate(
-        ['email' => 'admin@task.com'],
-        ['name' => 'Admin', 'password' => bcrypt('password123')]
-    );
-    auth()->login($user);
     return redirect('/projects');
 });
+
+Route::middleware('auth')->group(function () {
+    Route::get('/projects', function () {
+        return view('projects');
+    });
+
+    Route::get('/projects/{project}', function (\App\Models\Project $project) {
+        return view('project-tasks', ['project' => $project]);
+    });
+});
+
+require __DIR__.'/auth.php';
