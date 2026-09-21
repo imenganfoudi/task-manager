@@ -10,6 +10,10 @@ Route::get('/projects', function () {
     return view('projects');
 })->middleware('auth');
 
+Route::get('/projects/{project}', function (\App\Models\Project $project) {
+    return view('project-tasks', ['project' => $project]);
+})->middleware('auth');
+
 Route::get('/login-as-admin', function () {
     $user = \App\Models\User::firstOrCreate(
         ['email' => 'admin@task.com'],
