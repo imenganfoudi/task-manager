@@ -57,6 +57,10 @@ new class extends Component
 
     public function deleteTask($taskId)
     {
+        if (!auth()->user()->hasRole('admin')) {
+            abort(403, 'Seuls les administrateurs peuvent supprimer des tâches.');
+        }
+
         Task::findOrFail($taskId)->delete();
     }
 };
@@ -129,7 +133,9 @@ new class extends Component
                                 @if ($status !== 'done')
                                     <button wire:click="moveTask({{ $task->id }}, 'done')" class="text-xs text-green-600 hover:underline">Terminé →</button>
                                 @endif
-                                <button wire:click="deleteTask({{ $task->id }})" class="text-xs text-red-500 hover:underline ml-auto">🗑</button>
+                                @if (auth()->user()->hasRole('admin'))
+                                    <button wire:click="deleteTask({{ $task->id }})" class="text-xs text-red-500 hover:underline ml-auto">🗑</button>
+                                @endif
                             </div>
                         </div>
                     @endforeach
