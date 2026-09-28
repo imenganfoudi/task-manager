@@ -6,6 +6,7 @@
     @vite('resources/css/app.css')
 </head>
 <body class="bg-gray-100">
+    <x-navbar />
     <livewire:task-board :project="$project" />
     @livewireScripts
 </body>
