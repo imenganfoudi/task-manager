@@ -1,8 +1,7 @@
 # Task Manager — Gestion de projets et de tâches
 
 Application de gestion de projets en équipe avec tableau Kanban et gestion des rôles.
-
-![Tests](https://img.shields.io/badge/tests-31%20passing-brightgreen)
+[![Tests](https://github.com/imenganfoudi/task-manager/actions/workflows/tests.yml/badge.svg)](https://github.com/imenganfoudi/task-manager/actions/workflows/tests.yml)
 
 ## Démo en ligne
 
